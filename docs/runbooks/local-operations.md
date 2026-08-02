@@ -23,7 +23,7 @@ Restarting the worker is safe. Its durable inbox rejects repeat event IDs and it
 
 ## Invalid event and replay
 
-Run `pnpm --filter @herdpulse/simulator incident:schema`, observe the worker failure counter and the `animal.event.dlq.v1` topic, then run `pnpm --filter @herdpulse/simulator replay:dlq`. The replay utility repairs the fixture, creates a fresh event ID, preserves the business timestamp, and republishes it.
+Run `pnpm --filter @herdpulse/simulator incident:schema`, observe the worker failure counter and the `animal.event.dlq.v1` topic, then run `pnpm --filter @herdpulse/simulator replay:dlq`. The replay utility repairs the fixture, retains its original event ID for idempotency, preserves the business timestamp, and republishes it.
 
 ## Optional observability
 
