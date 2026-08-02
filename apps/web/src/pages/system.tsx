@@ -59,7 +59,7 @@ export function SystemPage() {
           <code>pnpm --filter @herdpulse/simulator incident:schema</code>
           <span>Malformed version routes to dead letter</span>
           <code>pnpm --filter @herdpulse/simulator replay:dlq</code>
-          <span>Repair and replay with a new event ID</span>
+          <span>Repair and replay with the original event ID</span>
         </div>
       </section>
     </>
