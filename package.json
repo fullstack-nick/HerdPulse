@@ -1,0 +1,44 @@
+{
+  "name": "herd-pulse",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first portfolio platform for real-time herd health alerts and barn task orchestration.",
+  "license": "MIT",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "predev": "pnpm run build:packages",
+    "dev": "pnpm --parallel --filter @herdpulse/api --filter @herdpulse/worker --filter @herdpulse/simulator --filter @herdpulse/web dev",
+    "dev:api": "pnpm --filter @herdpulse/api dev",
+    "dev:web": "pnpm --filter @herdpulse/web dev",
+    "dev:mobile": "pnpm --filter @herdpulse/mobile start",
+    "infra:up": "docker compose --profile auth up -d postgres redis kafka keycloak",
+    "infra:down": "docker compose down",
+    "build:packages": "pnpm --filter @herdpulse/domain --filter @herdpulse/event-contracts --filter @herdpulse/database build",
+    "build": "pnpm run build:packages && pnpm --filter @herdpulse/api --filter @herdpulse/worker --filter @herdpulse/simulator --filter @herdpulse/web run build",
+    "typecheck": "pnpm run build:packages && pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "db:migrate": "pnpm --filter @herdpulse/database migrate",
+    "db:seed": "pnpm --filter @herdpulse/database seed",
+    "env:init": "tsx scripts/env-init.ts",
+    "demo": "pnpm --filter @herdpulse/simulator demo"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@types/node": "^24.10.0",
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2",
+    "vitest": "^4.0.4"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "HerdPulse",
+    "slug": "herd-pulse",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": { "backgroundColor": "#153f37", "resizeMode": "contain" },
+    "ios": { "supportsTablet": true, "bundleIdentifier": "dev.herdpulse.companion" },
+    "android": {
+      "package": "dev.herdpulse.companion",
+      "adaptiveIcon": { "backgroundColor": "#153f37" },
+      "edgeToEdgeEnabled": true
+    },
+    "web": { "bundler": "metro" }
+  }
+}
