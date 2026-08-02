@@ -1,0 +1,195 @@
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+enum HealthCaseStatus {
+  OPEN
+  ACKNOWLEDGED
+  IN_PROGRESS
+  RESOLVED
+}
+enum TaskStatus {
+  OPEN
+  CLAIMED
+  COMPLETED
+  CANCELLED
+}
+enum DeviceStatus {
+  ONLINE
+  STALE
+  OFFLINE
+}
+
+type Viewer {
+  id: ID!
+  displayName: String!
+  email: String!
+  organizationId: ID!
+  organizationName: String!
+  role: String!
+}
+
+type Dashboard {
+  totalAnimals: Int!
+  activeCases: Int!
+  highPriorityCases: Int!
+  openTasks: Int!
+  overdueTasks: Int!
+  offlineDevices: Int!
+  cases: [HealthCase!]!
+  tasks: [Task!]!
+}
+
+type AnimalGroup {
+  id: ID!
+  name: String!
+}
+type Device {
+  id: ID!
+  hardwareId: String!
+  status: DeviceStatus!
+  lastSeenAt: String
+  batteryPercent: Int
+  signalStrength: Int
+}
+type Animal {
+  id: ID!
+  officialId: String!
+  displayName: String!
+  lactationPhase: String!
+  parity: Int!
+  group: AnimalGroup
+  device: Device
+  activeCase: HealthCase
+}
+type RiskReason {
+  code: String!
+  points: Int!
+  detail: String
+}
+type RiskAssessment {
+  id: ID!
+  score: Int!
+  priority: Priority!
+  rulesetVersion: Int!
+  windowStart: String!
+  windowEnd: String!
+  reasons: [RiskReason!]!
+  consideredEventIds: [ID!]!
+  createdAt: String!
+}
+type TimelineEntry {
+  id: ID!
+  kind: String!
+  title: String!
+  detail: String
+  occurredAt: String!
+}
+type TelemetryPoint {
+  id: ID!
+  metric: String!
+  value: Float!
+  unit: String!
+  occurredAt: String!
+}
+type Comment {
+  id: ID!
+  body: String!
+  authorName: String!
+  createdAt: String!
+}
+type Task {
+  id: ID!
+  title: String!
+  instructions: String!
+  status: TaskStatus!
+  dueAt: String!
+  isOverdue: Boolean!
+  version: Int!
+  assigneeId: ID
+  assigneeName: String
+  animalId: ID!
+  animalName: String!
+  caseId: ID!
+  priority: Priority!
+  resolution: String
+  diagnosisCode: String
+  completedAt: String
+  comments: [Comment!]!
+}
+type HealthCase {
+  id: ID!
+  status: HealthCaseStatus!
+  priority: Priority!
+  score: Int!
+  version: Int!
+  openedAt: String!
+  acknowledgedAt: String
+  resolvedAt: String
+  resolution: String
+  updatedAt: String!
+  animal: Animal!
+  riskAssessment: RiskAssessment
+  tasks: [Task!]!
+  timeline: [TimelineEntry!]!
+}
+type MutationResult {
+  ok: Boolean!
+  message: String!
+  entityId: ID
+}
+type ChangeNotice {
+  entityId: ID!
+  organizationId: ID!
+  changeType: String!
+}
+
+type Query {
+  viewer: Viewer!
+  dashboard(organizationId: ID!): Dashboard!
+  healthCases(
+    organizationId: ID!
+    status: HealthCaseStatus
+    priority: Priority
+    limit: Int = 50
+  ): [HealthCase!]!
+  healthCase(organizationId: ID!, id: ID!): HealthCase
+  animals(organizationId: ID!, search: String, limit: Int = 100): [Animal!]!
+  animal(organizationId: ID!, id: ID!): Animal
+  telemetry(organizationId: ID!, animalId: ID!, metric: String, hours: Int = 24): [TelemetryPoint!]!
+  tasks(organizationId: ID!, status: TaskStatus, mine: Boolean = false, limit: Int = 100): [Task!]!
+}
+
+type Mutation {
+  acknowledgeCase(organizationId: ID!, id: ID!, expectedVersion: Int!): MutationResult!
+  claimTask(organizationId: ID!, id: ID!, expectedVersion: Int!): MutationResult!
+  assignTask(organizationId: ID!, id: ID!, assigneeId: ID!, expectedVersion: Int!): MutationResult!
+  addTaskComment(organizationId: ID!, taskId: ID!, body: String!): MutationResult!
+  completeTask(
+    organizationId: ID!
+    id: ID!
+    resolution: String!
+    diagnosisCode: String
+    expectedVersion: Int!
+  ): MutationResult!
+  resolveCase(
+    organizationId: ID!
+    id: ID!
+    resolution: String!
+    expectedVersion: Int!
+  ): MutationResult!
+  recordAnimalEvent(
+    organizationId: ID!
+    animalId: ID!
+    eventType: String!
+    occurredAt: String
+  ): MutationResult!
+  replayOutbox(organizationId: ID!): MutationResult!
+}
+
+type Subscription {
+  healthCaseChanged(organizationId: ID!): ChangeNotice!
+  taskChanged(organizationId: ID!): ChangeNotice!
+  deviceStatusChanged(organizationId: ID!): ChangeNotice!
+}

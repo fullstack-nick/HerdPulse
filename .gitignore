@@ -7,9 +7,12 @@ dist/
 build/
 coverage/
 .turbo/
+*.tsbuildinfo
 test-results/
 playwright-report/
+.playwright-cli/
 .artifacts/
+output/
 
 # Runtime configuration and secrets
 .env

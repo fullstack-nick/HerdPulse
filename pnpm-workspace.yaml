@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  '@apollo/protobufjs': true
+  '@nestjs/core': true
+  esbuild: true
+
+nodeLinker: hoisted
+strictPeerDependencies: false
+autoInstallPeers: true
